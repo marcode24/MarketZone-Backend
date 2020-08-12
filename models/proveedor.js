@@ -16,6 +16,9 @@ const proveedorSchema = Schema({
     img: {
         type: String
     },
+    imgCloud: {
+        type: String
+    },
     nombre_contacto: {
         type: String,
         required: true

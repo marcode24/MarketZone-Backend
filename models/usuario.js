@@ -17,6 +17,9 @@ const UsuarioSchema = Schema({
     img: {
         type: String
     },
+    imgCloud: {
+        type: String
+    },
     role: {
         type: String,
         required: true,

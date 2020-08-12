@@ -26,6 +26,9 @@ app.use(express.static('public'));
 app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/login', require('./routes/auth'));
 app.use('/api/proveedores', require('./routes/proveedores'));
+app.use('/api/categorias', require('./routes/categorias'));
+app.use('/api/productos', require('./routes/productos'));
+app.use('/api/upload', require('./routes/uploads'));
 
 
 

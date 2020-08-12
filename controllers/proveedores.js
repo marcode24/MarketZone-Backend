@@ -16,7 +16,11 @@ const getProveedores = async(req, res = response) => {
             total
         });
     } catch (error) {
-        errores(error);
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
     }
 
 };
@@ -30,7 +34,11 @@ const crearProveedor = async(req, res = response) => {
             proveedor: proveedorDB
         });
     } catch (error) {
-        errores(error);
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
     }
 };
 
