@@ -18,13 +18,13 @@ const login = async(req, res = response) => {
                     token
                 });
             } else {
-                return res.json({
+                return res.status(400).json({
                     ok: false,
                     msg: 'Usuario y/o password incorrectos'
                 });
             }
         } else {
-            return res.json({
+            return res.status(400).json({
                 ok: false,
                 msg: 'Usuario y/o password incorrectos'
             });
@@ -38,6 +38,21 @@ const login = async(req, res = response) => {
     }
 };
 
+const renewToken = async(req, res = response) => {
+
+    const uid = req.uid;
+
+    const token = await generarJWT(uid);
+    const usuario = await Usuario.findById(uid);
+    res.json({
+        ok: true,
+        token,
+        usuario,
+    });
+};
+
+
 module.exports = {
-    login
+    login,
+    renewToken
 };

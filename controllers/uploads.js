@@ -62,7 +62,7 @@ const fileUpload = (req, res = response) => {
             });
         }
         // 
-        cloudinary.uploader.upload(path, (result, err) => {
+        cloudinary.uploader.upload(path, { transformation: [{ width: 70, height: 70 }] }, (result, err) => {
             const pathCloud = err.url;
             actualizarImagen(tipo, id, nombreArchivo, pathCloud);
             res.json({

@@ -22,6 +22,26 @@ const getCategorias = async(req, res = response) => {
     }
 };
 
+const getAllCategorias = async(req, res = response) => {
+    try {
+        const [categorias, total] = await Promise.all([
+            Categoria.find(),
+            Categoria.countDocuments()
+        ]);
+        res.status(200).json({
+            ok: true,
+            categorias,
+            total
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
+};
+
 const crearCategoria = async(req, res = response) => {
     const categoria = new Categoria({...req.body });
     try {
@@ -95,5 +115,6 @@ module.exports = {
     getCategorias,
     crearCategoria,
     actualizarCateogoria,
-    borrarCategoria
+    borrarCategoria,
+    getAllCategorias
 };

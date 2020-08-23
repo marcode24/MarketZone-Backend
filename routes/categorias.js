@@ -3,12 +3,13 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validator-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
-const { getCategorias, crearCategoria, actualizarCateogoria, borrarCategoria } = require('../controllers/categorias');
+const { getCategorias, getAllCategorias, crearCategoria, actualizarCateogoria, borrarCategoria } = require('../controllers/categorias');
 
 const router = Router();
 
 
 router.get('/', validarJWT, getCategorias);
+router.get('/todo', validarJWT, getAllCategorias);
 
 router.post('/', [validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),

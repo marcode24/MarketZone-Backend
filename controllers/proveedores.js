@@ -25,9 +25,31 @@ const getProveedores = async(req, res = response) => {
 
 };
 
+const getAllProveedores = async(req, res = response) => {
+    try {
+        const [proveedores, total] = await Promise.all([
+            Proveedor.find(),
+            Proveedor.countDocuments()
+        ]);
+        res.status(200).json({
+            ok: true,
+            proveedores,
+            total
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
+
+};
+
 const crearProveedor = async(req, res = response) => {
     const proveedor = new Proveedor({...req.body });
     try {
+        proveedor.imgCloud = 'https://res.cloudinary.com/dfeujtobk/image/upload/c_scale,h_58/v1597454162/no-image_bkvoag.png';
         const proveedorDB = await proveedor.save();
         res.status(200).json({
             ok: true,
@@ -86,6 +108,22 @@ const borrarProveedor = async(req, res = response) => {
     }
 
 };
+const getProveedorbyID = async(req, res = response) => {
+    const id = req.params.id;
+    try {
+        const proveedor = await Proveedor.findById(id);
+        res.json({
+            ok: true,
+            proveedor
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
+};
 
 function errores(error) {
     console.log(error);
@@ -99,5 +137,7 @@ module.exports = {
     getProveedores,
     crearProveedor,
     actualizarProveedor,
-    borrarProveedor
+    borrarProveedor,
+    getProveedorbyID,
+    getAllProveedores
 };

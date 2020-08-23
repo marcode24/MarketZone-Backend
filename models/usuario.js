@@ -14,6 +14,19 @@ const UsuarioSchema = Schema({
         type: String,
         required: true
     },
+    telefono: {
+        type: Number,
+        required: true
+    },
+    usuario: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
     img: {
         type: String
     },
@@ -24,15 +37,6 @@ const UsuarioSchema = Schema({
         type: String,
         required: true,
         default: 'USER_ROLE'
-    },
-    usuario: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
     }
 });
 

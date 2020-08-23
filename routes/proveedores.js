@@ -2,12 +2,13 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validator-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
-const { crearProveedor, getProveedores, actualizarProveedor, borrarProveedor } = require('../controllers/proveedores');
+const { crearProveedor, getAllProveedores, getProveedores, actualizarProveedor, borrarProveedor, getProveedorbyID } = require('../controllers/proveedores');
 
 const router = Router();
 
 
 router.get('/', validarJWT, getProveedores);
+router.get('/todo', validarJWT, getAllProveedores);
 
 router.post('/', [validarJWT,
     check('razon_social', 'La razon social es obligatoria').not().isEmpty(),
@@ -32,5 +33,7 @@ router.put('/:id', [validarJWT,
 ], actualizarProveedor);
 
 router.delete('/:id', validarJWT, borrarProveedor);
+
+router.get('/:id', validarJWT, getProveedorbyID);
 
 module.exports = router;

@@ -15,7 +15,23 @@ const getUsuarios = async(req, res = resp) => {
         total
     });
 };
+const getUsuarioByID = async(req, res = response) => {
+    const id = req.params.id;
+    try {
+        const usuario = await Usuario.findById(id);
+        res.status(200).json({
+            ok: true,
+            usuario
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
 
+};
 const crearUsuario = async(req, res = response) => {
     const { usuario, password } = req.body;
 
@@ -33,7 +49,7 @@ const crearUsuario = async(req, res = response) => {
         // encriptar password
         const salt = bcrypt.genSaltSync();
         usuarioCrear.password = bcrypt.hashSync(password, salt);
-
+        usuarioCrear.imgCloud = 'https://res.cloudinary.com/dfeujtobk/image/upload/c_scale,h_50,q_100/v1598123661/user_xzklt6.png';
         // guardamos usuario
         await usuarioCrear.save();
 
@@ -122,5 +138,6 @@ module.exports = {
     crearUsuario,
     getUsuarios,
     actualizarUsuario,
-    eliminarUsuario
+    eliminarUsuario,
+    getUsuarioByID
 };
