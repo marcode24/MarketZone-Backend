@@ -7,8 +7,8 @@ const { crearUsuario, getUsuarioByID, getUsuarios, actualizarUsuario, eliminarUs
 
 const router = Router();
 
-
 router.get('/', validarJWT, getUsuarios);
+
 router.get('/:id', validarJWT, getUsuarioByID);
 
 router.post('/', [validarJWT,

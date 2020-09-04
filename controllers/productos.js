@@ -21,8 +21,8 @@ const getProductos = async(req, res = response) => {
             msg: 'Hable con el administrador'
         });
     }
-
 };
+
 const getProductoByID = async(req, res = response) => {
     const id = req.params.id;
     try {
@@ -60,11 +60,10 @@ const crearProductos = async(req, res = response) => {
         const productoCrear = new Producto({...req.body });
         productoCrear.imgCloud = 'https://res.cloudinary.com/dfeujtobk/image/upload/c_scale,h_58/v1597454162/no-image_bkvoag.png';
         const productoDB = await productoCrear.save();
-        res.json({
+        res.status(200).json({
             ok: true,
             producto: productoDB
         });
-
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -76,19 +75,33 @@ const crearProductos = async(req, res = response) => {
 
 const actualizarProductos = async(req, res = response) => {
     const id = req.params.id;
+    const { codigo } = req.body;
     try {
         const producto = await Producto.findById(id);
+        let productoActualizar = {...req.body };
+
         if (!producto) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Producto no encotrado'
+                msg: 'Producto no encontrado'
             });
         }
-        const cambiosProducto = {...req.body };
-        const productoActualizado = await Producto.findByIdAndUpdate(id, cambiosProducto, { new: true });
-        res.json({
+
+        if (producto.codigo !== codigo) {
+            const codigoExiste = await Producto.findOne({ codigo });
+            if (codigoExiste) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'Un producto ya tiene ese codigo'
+                });
+            }
+            productoActualizar.codigo = codigo;
+        }
+
+        const productoActualizado = await Producto.findByIdAndUpdate(id, productoActualizar, { new: true });
+        res.status(200).json({
             ok: true,
-            medico: productoActualizado
+            producto: productoActualizado
         });
     } catch (error) {
         console.log(error);
@@ -130,5 +143,5 @@ module.exports = {
     getProductos,
     actualizarProductos,
     borrarProductos,
-    getProductoByID
+    getProductoByID,
 };

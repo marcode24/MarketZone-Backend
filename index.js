@@ -33,9 +33,6 @@ app.use('/api/busquedas', require('./routes/busquedas'));
 app.use('/api/ventas', require('./routes/ventas'));
 
 
-
-
-
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en puerto ' + process.env.PORT);
 });

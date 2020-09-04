@@ -1,5 +1,6 @@
 const { response } = require('express');
 const Categoria = require('../models/categoria');
+const mongoose = require('mongoose');
 
 const getCategorias = async(req, res = response) => {
     const desde = Number(req.query.body) || 0;
@@ -59,21 +60,22 @@ const crearCategoria = async(req, res = response) => {
     }
 };
 
-const actualizarCateogoria = async(req, res = response) => {
+const actualizarCategoria = async(req, res = response) => {
     const id = req.params.id;
     try {
         const categoria = await Categoria.findById(id);
         if (!categoria) {
-            res.status(404).json({
+            return res.status(404).json({
                 ok: false,
-                msg: 'Categoria no encontrado'
+                msg: 'Categoria no encontrada'
             });
         }
-        const cambioCategoria = {...req.body };
-        const categoriaActualizado = await Categoria.findByIdAndUpdate(id, cambioCategoria, { new: true });
+        const cambiosCategoria = {...req.body };
+        mongoose.set('useFindAndModify', false);
+        const categoriaActualizada = await Categoria.findByIdAndUpdate(id, cambiosCategoria, { new: true });
         res.status(200).json({
             ok: true,
-            categoria: categoriaActualizado
+            categoria: categoriaActualizada
         });
     } catch (error) {
         console.log(error);
@@ -89,13 +91,13 @@ const borrarCategoria = async(req, res = response) => {
     try {
         const categoria = await Categoria.findById(id);
         if (!categoria) {
-            res.status(404).json({
+            return res.status(404).json({
                 ok: false,
-                msg: 'Categoria no encontrado'
+                msg: 'Categoria no encontrada'
             });
         }
         await Categoria.findByIdAndDelete(id);
-        res.json({
+        res.status(200).json({
             ok: true,
             msg: 'Categoria eliminada'
         });
@@ -106,15 +108,12 @@ const borrarCategoria = async(req, res = response) => {
             msg: 'Hable con el administrador'
         });
     }
-
 };
-
-
 
 module.exports = {
     getCategorias,
     crearCategoria,
-    actualizarCateogoria,
+    actualizarCategoria,
     borrarCategoria,
     getAllCategorias
 };

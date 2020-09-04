@@ -3,12 +3,20 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validator-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
-const { crearProductos, getProductoByID, getProductos, actualizarProductos, borrarProductos } = require('../controllers/productos');
+const {
+    crearProductos,
+    getProductoByID,
+    getProductos,
+    actualizarProductos,
+    borrarProductos,
+    obtenerCodigo
+} = require('../controllers/productos');
 
 const router = Router();
 
 router.get('/', validarJWT, getProductos);
 router.get('/:id', validarJWT, getProductoByID);
+
 
 router.post('/', [
     validarJWT,

@@ -2,23 +2,39 @@ const { response } = require('express');
 const bcrypt = require('bcryptjs');
 const Usuario = require('../models/usuario');
 const { generarJWT } = require('../helpers/jwt');
+const mongoose = require('mongoose');
 
 const getUsuarios = async(req, res = resp) => {
     const desde = Number(req.query.body) || 0;
-    const [usuarios, total] = await Promise.all([
-        Usuario.find().skip(desde).limit(5),
-        Usuario.countDocuments()
-    ]);
-    res.json({
-        ok: true,
-        usuarios,
-        total
-    });
+    try {
+        const [usuarios, total] = await Promise.all([
+            Usuario.find().skip(desde).limit(5),
+            Usuario.countDocuments()
+        ]);
+        res.status(200).json({
+            ok: true,
+            usuarios,
+            total
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
 };
+
 const getUsuarioByID = async(req, res = response) => {
     const id = req.params.id;
     try {
-        const usuario = await Usuario.findById(id);
+        const usuario = await Usuario.findById(id, 'nombre apellido direccion telefono role usuario');
+        if (!usuario) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Usuario no encontrado'
+            });
+        }
         res.status(200).json({
             ok: true,
             usuario
@@ -32,11 +48,10 @@ const getUsuarioByID = async(req, res = response) => {
     }
 
 };
+
 const crearUsuario = async(req, res = response) => {
     const { usuario, password } = req.body;
-
     try {
-
         const usuarioExiste = await Usuario.findOne({ usuario });
         if (usuarioExiste) {
             return res.status(400).json({
@@ -45,23 +60,20 @@ const crearUsuario = async(req, res = response) => {
             });
         }
         const usuarioCrear = new Usuario(req.body);
-
         // encriptar password
         const salt = bcrypt.genSaltSync();
         usuarioCrear.password = bcrypt.hashSync(password, salt);
+        // img por default de usuario
         usuarioCrear.imgCloud = 'https://res.cloudinary.com/dfeujtobk/image/upload/c_scale,h_50,q_100/v1598123661/user_xzklt6.png';
         // guardamos usuario
         await usuarioCrear.save();
-
         // generar jwt
         const token = await generarJWT(usuarioCrear.id);
-
         res.status(200).json({
             ok: true,
             usuarioCrear,
             token
         });
-
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -69,8 +81,6 @@ const crearUsuario = async(req, res = response) => {
             msg: 'Error al crear usuario'
         });
     }
-
-
 };
 
 const actualizarUsuario = async(req, res = response) => {
@@ -83,9 +93,7 @@ const actualizarUsuario = async(req, res = response) => {
                 msg: 'No existe ese usuario'
             });
         }
-
         const { password, usuario, ...campos } = req.body;
-
         if (usuarioDB.usuario !== usuario) {
             const existeUsuario = await Usuario.findOne({ usuario: usuario });
             if (existeUsuario) {
@@ -96,6 +104,7 @@ const actualizarUsuario = async(req, res = response) => {
             }
         }
         campos.usuario = usuario;
+        mongoose.set('useFindAndModify', false);
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
         res.status(200).json({
             ok: true,
