@@ -2,10 +2,8 @@ const { response } = require('express');
 const Proveedor = require('../models/proveedor');
 
 const getProveedores = async(req, res = response) => {
-    const desde = Number(req.query.body) || 0;
-
+    const desde = Number(req.query.desde) || 0;
     try {
-
         const [proveedores, total] = await Promise.all([
             Proveedor.find().skip(desde).limit(5),
             Proveedor.countDocuments()
@@ -22,7 +20,6 @@ const getProveedores = async(req, res = response) => {
             msg: 'Hable con el administrador'
         });
     }
-
 };
 
 const getAllProveedores = async(req, res = response) => {

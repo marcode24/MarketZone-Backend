@@ -3,7 +3,7 @@ const Producto = require('../models/producto');
 
 
 const getProductos = async(req, res = response) => {
-    const desde = Number(req.query.body) || 0;
+    const desde = Number(req.query.desde) || 0;
     try {
         const [productos, total] = await Promise.all([
             Producto.find().populate('proveedor', 'razon_social').populate('categoria', 'nombre').skip(desde).limit(5),

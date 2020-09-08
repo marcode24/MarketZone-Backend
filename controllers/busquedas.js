@@ -1,6 +1,8 @@
 const { response } = require('express');
 
 const Producto = require('../models/producto');
+const Categoria = require('../models/categoria');
+const Proveedor = require('../models/proveedor');
 
 const getBusqueda = async(req, res = response) => {
     try {
@@ -8,7 +10,7 @@ const getBusqueda = async(req, res = response) => {
         // regex es para tener una busqueda sin importar caracteres (blanda)
         const regex = new RegExp(busqueda, 'i');
         const [productos] = await Promise.all([
-            Producto.find({ nombre: regex }),
+            Producto.find({ nombre: busqueda }),
         ]);
         res.json({
             ok: true,
@@ -22,16 +24,43 @@ const getBusqueda = async(req, res = response) => {
         });
     }
 };
+
+const getProductoByCodigo = async(req, res = response) => {
+    const codigo = req.params.busqueda;
+    try {
+        const producto = await Producto.findOne({ codigo });
+        res.status(200).json({
+            ok: true,
+            producto
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
+
+};
+
 const getDocumentosColeccion = async(req, res = response) => {
     try {
         const tabla = req.params.tabla;
         const busqueda = req.params.busqueda;
-        // regex es para tener una busqueda sin importar caracteres (blanda)
+        // regex es para tener una busqueda sin importar caracteres (blanda) case-Sensitive
         const regex = new RegExp(busqueda, 'i');
         let data;
         switch (tabla) {
             case 'productos':
-                data = await Producto.findOne({ codigo: busqueda });
+                data = await Producto.find({ nombre: regex })
+                    .populate('proveedor', 'razon_social')
+                    .populate('categoria', 'nombre');
+                break;
+            case 'categorias':
+                data = await Categoria.find({ nombre: regex });
+                break;
+            case 'proveedores':
+                data = await Proveedor.find({ razon_social: regex });
                 break;
             default:
                 return res.status(500).json({
@@ -54,5 +83,6 @@ const getDocumentosColeccion = async(req, res = response) => {
 
 module.exports = {
     getBusqueda,
-    getDocumentosColeccion
+    getDocumentosColeccion,
+    getProductoByCodigo
 };

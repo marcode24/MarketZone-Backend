@@ -3,7 +3,7 @@ const Categoria = require('../models/categoria');
 const mongoose = require('mongoose');
 
 const getCategorias = async(req, res = response) => {
-    const desde = Number(req.query.body) || 0;
+    const desde = Number(req.query.desde) || 0;
     try {
         const [categorias, total] = await Promise.all([
             Categoria.find().skip(desde).limit(5),
