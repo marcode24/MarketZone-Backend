@@ -27,6 +27,14 @@ const ProductoSchema = Schema({
     imgCloud: {
         type: String
     },
+    vendidos: {
+        type: Number,
+        default: 0
+    },
+    ganancia: {
+        type: Number,
+        default: 0
+    },
     proveedor: {
         type: SchemaTypes.ObjectId,
         ref: 'Proveedor',

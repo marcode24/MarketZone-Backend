@@ -42,6 +42,10 @@ const VentaSchema = Schema({
         type: Boolean,
         default: true
     },
+    ganancia: {
+        type: Number,
+        default: 0
+    },
     detalle: [DetalleSchema],
     vendedor: {
         type: SchemaTypes.ObjectId,

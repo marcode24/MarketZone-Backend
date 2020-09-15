@@ -23,15 +23,15 @@ app.use(express.static('public'));
 
 
 // Rutas de mi server
-app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/login', require('./routes/auth'));
+app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/proveedores', require('./routes/proveedores'));
 app.use('/api/categorias', require('./routes/categorias'));
 app.use('/api/productos', require('./routes/productos'));
 app.use('/api/upload', require('./routes/uploads'));
 app.use('/api/busquedas', require('./routes/busquedas'));
 app.use('/api/ventas', require('./routes/ventas'));
-
+app.use('/api/estadisticas', require('./routes/estadisticas'));
 
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en puerto ' + process.env.PORT);

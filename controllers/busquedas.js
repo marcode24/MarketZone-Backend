@@ -1,8 +1,8 @@
 const { response } = require('express');
-
 const Producto = require('../models/producto');
 const Categoria = require('../models/categoria');
 const Proveedor = require('../models/proveedor');
+const Venta = require('../models/venta');
 
 const getBusqueda = async(req, res = response) => {
     try {
@@ -81,8 +81,43 @@ const getDocumentosColeccion = async(req, res = response) => {
     }
 };
 
+const getVentasByTermino = async(req, res = response) => {
+    try {
+        const filtro = req.params.filtro;
+        const busqueda = req.params.busqueda;
+        let data = [];
+        switch (filtro) {
+            case 'Numero':
+                data = await Venta.find({ noVenta: busqueda })
+                    .populate('vendedor', 'nombre apellido');
+                break;
+            case 'Vendedor':
+                let ventas = await Venta.find().populate('vendedor', 'nombre apellido');
+                data = ventas.filter(venta => venta.vendedor.nombre === busqueda || venta.vendedor.apellido === busqueda ||
+                    `${venta.vendedor.nombre} ${venta.vendedor.apellido}` === busqueda);
+                break;
+            default:
+                return res.status(500).json({
+                    ok: false,
+                    msg: 'El filtro de busqueda no existe'
+                });
+        }
+        res.status(200).json({
+            ok: true,
+            resultados: data
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        });
+    }
+};
+
 module.exports = {
     getBusqueda,
     getDocumentosColeccion,
-    getProductoByCodigo
+    getProductoByCodigo,
+    getVentasByTermino
 };

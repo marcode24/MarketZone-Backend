@@ -1,7 +1,9 @@
 const { response } = require('express');
-const Venta = require('../models/venta');
-const venta = require('../models/venta');
 
+const Venta = require('../models/venta');
+
+const { actualizarVentaGananciaProductos } = require('../helpers/actualizar-productosVendidos');
+const { getGananciaPorVenta } = require('../helpers/ganancia');
 const { getNoVenta } = require('../helpers/no-venta');
 
 const getVentas = async(req, res = response) => {
@@ -9,11 +11,10 @@ const getVentas = async(req, res = response) => {
     try {
         // .populate({ path: 'detalle', populate: { path: 'producto', populate: { path: 'proveedor' } } })
         // varios populate anidados para obtener datos de dicho objectID
-
         const [ventas, total] = await Promise.all([
             Venta.find().populate('vendedor', 'nombre apellido')
             .populate({ path: 'detalle', populate: { path: 'producto' } })
-            .skip(desde).limit(20),
+            .skip(desde).limit(50),
             Venta.countDocuments()
         ]);
         res.status(200).json({
@@ -58,6 +59,11 @@ const getVentaByID = async(req, res = response) => {
 const crearVenta = async(req, res = response) => {
     try {
         const ventaCrear = new Venta({...req.body });
+        ventaCrear.ganacia = 0;
+        if (ventaCrear.estado) {
+            actualizarVentaGananciaProductos(req);
+            ventaCrear.ganancia = await getGananciaPorVenta(req);
+        }
         ventaCrear.noVenta = await getNoVenta();
         const ventaDB = await ventaCrear.save();
         res.json({
